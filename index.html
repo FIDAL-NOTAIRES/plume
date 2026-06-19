@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>PLUME — Statuts de SCI · FIDAL Notaires</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2333838B'/%3E%3Ccircle cx='10' cy='22' r='3' fill='%23FFE764'/%3E%3Cpath d='M23 8C15 9 10 15 9 21 16 20 22 14 23 8Z' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2078%2078%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27bg%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%2316314f%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23091525%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2778%27%20height%3D%2778%27%20rx%3D%2714%27%20fill%3D%27url%28%23bg%29%27%2F%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%236DD5DC%27%20stroke-width%3D%275%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M39%2013%20L56%2049%20L46%2060%20L32%2060%20L22%2049%20Z%27%2F%3E%3Cline%20x1%3D%2739%27%20y1%3D%2713%27%20x2%3D%2739%27%20y2%3D%2740%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2739%27%20cy%3D%2743.5%27%20r%3D%274.6%27%20fill%3D%27%23E3CC7A%27%2F%3E%3C%2Fsvg%3E" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/docx@8/build/index.umd.js"></script>
 <style>
@@ -15,18 +15,43 @@
 }
 *{box-sizing:border-box}
 body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);}
-/* En-tête */
-header{background:var(--navy);color:#fff;padding:18px 22px;display:flex;align-items:center;gap:16px;
-  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 2px,transparent 2px 9px);}
-.appicon{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;position:relative;box-shadow:0 2px 6px rgba(0,0,0,.25);flex:none}
-.appicon i{font-size:26px;color:var(--teal);line-height:1}
-.appicon .dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--jaune);left:8px;bottom:8px;box-shadow:0 0 0 2px #fff}
-.lockup{font-size:12px;letter-spacing:.14em;color:#cdd5e0;line-height:1.25}
-.lockup b{color:#fff;font-weight:700}
-.lockup .sl{color:var(--ocre);font-weight:700}
-.htitle{margin-left:auto;text-align:right}
-.htitle .t{font-size:18px;font-weight:700}
-.htitle .s{font-size:12px;color:#cdd5e0}
+/* En-tête (bandeau commun — style COUNTDOWN) */
+.topwrap{max-width:1100px;margin:0 auto;padding:20px 22px 0}
+.topbar{background:linear-gradient(120deg,#16314f,var(--navy));color:#fff;border-radius:16px;padding:22px 28px;display:flex;align-items:center;gap:22px}
+.lockup{font-family:Georgia,"Times New Roman",serif;font-size:23px;font-weight:700;display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.lockup .slash{color:var(--ocre)}
+.lockup .notaires{font-family:"Segoe UI",sans-serif;font-weight:600;letter-spacing:.26em;font-size:11.5px}
+.tb-div{width:1px;align-self:stretch;background:rgba(255,255,255,.16)}
+.tb-title .wordmark{font-family:Georgia,serif;font-size:29px;font-weight:700;letter-spacing:.04em;line-height:1.05}
+.tb-title .subtitle{color:var(--cyan);letter-spacing:.2em;font-size:11.5px;text-transform:uppercase;margin-top:5px;font-weight:600}
+.tb-spacer{flex:1}
+.tb-ref{text-align:right;font-size:12px;line-height:1.55;color:#A9C2D6}
+.tb-ref .r1{color:var(--ocre);font-weight:700}
+@media(max-width:760px){.topbar{flex-wrap:wrap;gap:12px}.tb-div,.tb-spacer{display:none}.tb-ref{text-align:left;width:100%}.tb-title .wordmark{font-size:25px}}
+/* Menu de matieres */
+#menu .menu-head{padding:24px 0 2px}
+#menu .mh-title{font-family:Georgia,serif;font-size:22px;font-weight:700;color:var(--navy)}
+#menu .mh-sub{color:var(--grey);font-size:13.5px;margin-top:2px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:14px 0 32px}
+@media(max-width:760px){.mgrid{grid-template-columns:1fr}}
+.mcard{position:relative;text-align:left;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;cursor:pointer;font-family:inherit;padding:0;transition:.16s}
+.mcard:hover{transform:translateY(-2px);box-shadow:0 16px 30px -20px rgba(15,34,56,.55);border-color:#D8D5CD}
+.mcard .band{height:62px;background-color:var(--c);background-image:linear-gradient(100deg,rgba(0,0,0,.16),rgba(255,255,255,.42))}
+.mcard .ic{position:absolute;left:18px;top:38px;width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;box-shadow:0 3px 8px rgba(15,34,56,.18)}
+.mcard .ic i{font-size:24px;color:var(--c);line-height:1}
+.mcard .body{padding:30px 18px 16px}
+.mcard .mt{font-weight:700;font-size:16px;color:var(--navy)}
+.mcard .md{font-size:13px;color:var(--grey);margin-top:3px}
+.mcard .mfoot{font-size:12px;color:#9aa0a8;margin-top:11px}
+.mcard.inert{cursor:default}
+.mcard.inert:hover{transform:none;box-shadow:none;border-color:var(--line)}
+/* Fil d'ariane + vue matiere */
+#editor .crumb{font-size:13px;color:var(--grey);padding:18px 0 6px}
+#editor .crumb a{color:var(--grey);text-decoration:none;cursor:pointer}
+#editor .crumb a:hover{color:var(--ink);text-decoration:underline}
+#editor .crumb .sep{margin:0 8px;color:#C4C2BA}
+#editor .crumb .cur{color:var(--ink);font-weight:600}
+
 /* Bandeau garde-fous */
 #guards{background:#FFF7E6;border-bottom:1px solid #F0E3BD;color:#6b5a1f;font-size:13px;padding:8px 22px;display:none}
 #guards.on{display:block}
@@ -84,20 +109,41 @@ textarea{min-height:54px;resize:vertical}
 </head>
 <body>
 
-<header>
-  <div class="appicon"><i class="ti ti-feather"></i><span class="dot"></span></div>
-  <div class="lockup"><b>FIDAL</b> <span class="sl">/</span> <b>NOTAIRES</b><br>Paris — Madeleine</div>
-  <div class="htitle"><div class="t">PLUME</div><div class="s">Rédaction de statuts · SCI</div></div>
-</header>
+<div class="topwrap"><header class="topbar">
+  <div class="lockup">FIDAL <span class="slash">/</span> <span class="notaires">NOTAIRES</span></div>
+  <div class="tb-div"></div>
+  <div class="tb-title">
+    <div class="wordmark">PLUME</div>
+    <div class="subtitle">Rédaction de statuts de SCI</div>
+  </div>
+  <div class="tb-spacer"></div>
+  <div class="tb-ref"><div class="r1">Société civile</div><div>art. 1832 s. C. civ.</div></div>
+</header></div>
 
 <div id="guards"></div>
 
-<div class="wrap editor-only" id="editor">
+<div class="wrap" id="menu">
+  <div class="menu-head">
+    <div class="mh-title">Outils par matière</div>
+    <div class="mh-sub">Choisissez une matière pour accéder aux outils.</div>
+  </div>
+  <div class="mgrid">
+    <div class="mcard inert" style="--c:#5E9079"><div class="band"></div><div class="ic"><i class="ti ti-users"></i></div><div class="body"><div class="mt">Famille</div><div class="md">Donations, successions, régimes matrimoniaux et partages.</div><div class="mfoot">5 outils &middot; 2 disponibles</div></div></div>
+    <div class="mcard inert" style="--c:#C99A2E"><div class="band"></div><div class="ic"><i class="ti ti-database"></i></div><div class="body"><div class="mt">Patrimoine technique</div><div class="md">Évaluation, démembrement et fiscalité patrimoniale.</div><div class="mfoot">5 outils &middot; 1 disponible</div></div></div>
+    <div class="mcard inert" style="--c:#2E8B92"><div class="band"></div><div class="ic"><i class="ti ti-home"></i></div><div class="body"><div class="mt">Immobilier</div><div class="md">Frais d'acquisition et opérations de vente.</div><div class="mfoot">4 outils &middot; 3 disponibles</div></div></div>
+    <div class="mcard inert" style="--c:#1FA3AD"><div class="band"></div><div class="ic"><i class="ti ti-ruler-2"></i></div><div class="body"><div class="mt">Immobilier technique</div><div class="md">Fiscalité et opérations immobilières spécialisées.</div><div class="mfoot">3 outils</div></div></div>
+    <button class="mcard" style="--c:#E07A1F" onclick="openAffaires()"><div class="band"></div><div class="ic"><i class="ti ti-briefcase"></i></div><div class="body"><div class="mt">Droit notarial des affaires</div><div class="md">Cessions, sociétés et baux commerciaux.</div><div class="mfoot">Statuts de SCI &middot; disponible</div></div></button>
+    <div class="mcard inert" style="--c:#3B6BA5"><div class="band"></div><div class="ic"><i class="ti ti-world"></i></div><div class="body"><div class="mt">Opérations à l'international</div><div class="md">Actes transfrontaliers, non-résidents, apostille et légalisation.</div><div class="mfoot">4 outils &middot; 1 disponible</div></div></div>
+  </div>
+</div>
+
+<div class="wrap editor-only hide" id="editor">
+  <div class="crumb"><a onclick="backMenu()">Accueil</a><span class="sep">&rsaquo;</span><a onclick="backMenu()">Droit notarial des affaires</a><span class="sep">&rsaquo;</span><span class="cur">Statuts de SCI</span></div>
 
   <div class="grid">
     <!-- Colonne 1 -->
     <div>
-      <div class="card">
+      <div class="card" id="mat-forme">
         <h2><i class="ti ti-building-estate sb-ic"></i>Forme &amp; identité</h2>
         <label>Dénomination sociale</label>
         <input type="text" id="denom" placeholder="SCI DU ..." value="SCI DU VIEUX PLATANE" />
@@ -117,14 +163,14 @@ textarea{min-height:54px;resize:vertical}
         <div class="chk"><input type="checkbox" id="raison" checked><label for="raison" style="margin:0">Mentionner la raison d'être familiale</label></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="mat-assoc">
         <h2><i class="ti ti-users sb-ic"></i>Associés <span id="assocflag"></span></h2>
         <div id="assocs"></div>
         <button class="btn sm" type="button" onclick="addAssoc()">+ Ajouter un associé</button>
         <div class="hint">Pour une personne morale, choisir « PM » (représentée par son représentant légal).</div>
       </div>
 
-      <div class="card">
+      <div class="card" id="mat-apport">
         <h2><i class="ti ti-coins sb-ic"></i>Apports &amp; capital <span id="capflag"></span></h2>
         <label>Nature des apports</label>
         <select id="apports" onchange="syncImmo()">
@@ -156,7 +202,7 @@ textarea{min-height:54px;resize:vertical}
 
     <!-- Colonne 2 -->
     <div>
-      <div class="card">
+      <div class="card" id="mat-detention">
         <h2><i class="ti ti-chart-donut sb-ic"></i>Détention &amp; démembrement</h2>
         <label>Détention des parts</label>
         <select id="detention" onchange="syncDemem();updateGuards()">
@@ -170,7 +216,7 @@ textarea{min-height:54px;resize:vertical}
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" id="mat-parts">
         <h2><i class="ti ti-arrows-exchange sb-ic"></i>Parts, cessions, agrément</h2>
         <label>Nantissement des parts</label>
         <select id="nantiss"><option value="interdit">Interdit</option><option value="agrement">Soumis à agrément</option></select>
@@ -178,7 +224,7 @@ textarea{min-height:54px;resize:vertical}
         <div id="benefwrap" class="hide"><label>Bénéficiaires dispensés</label><input type="text" id="beneficiaires" placeholder="descendants en ligne directe des associés"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="mat-gerance">
         <h2><i class="ti ti-briefcase sb-ic"></i>Gérance</h2>
         <label>Gérant(s)</label><input type="text" id="gerant" value="M. Paul MARTEL-FICTIF">
         <div class="row2">
@@ -193,7 +239,7 @@ textarea{min-height:54px;resize:vertical}
         <div class="chk"><input type="checkbox" id="pouvoirs" checked><label for="pouvoirs" style="margin:0">Pouvoirs encadrés (autorisation AGE : vendre, hypothéquer, emprunter, bail commercial, fonder société)</label></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="mat-decisions">
         <h2><i class="ti ti-checklist sb-ic"></i>Décisions, comptes, divers</h2>
         <div class="row2">
           <div><label>Majorité AGO</label>
@@ -214,7 +260,7 @@ textarea{min-height:54px;resize:vertical}
         <label>Liquidateur</label><input type="text" id="liquidateur" placeholder="le gérant en fonction">
       </div>
 
-      <div class="card">
+      <div class="card" id="mat-regime">
         <h2><i class="ti ti-stamp sb-ic"></i>Régime &amp; office</h2>
         <label>Régime fiscal</label>
         <select id="fiscal" onchange="updateGuards()"><option value="ir">IR (art. 8 CGI)</option><option value="is">IS (sur option)</option></select>
@@ -230,7 +276,7 @@ textarea{min-height:54px;resize:vertical}
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" id="mat-logo">
         <h2><i class="ti ti-photo sb-ic"></i>Logo (optionnel, pour le .docx)</h2>
         <div class="hint">Coller ici la chaîne base64 du logo FIDAL (via l'utilitaire « PLUME_logo_to_base64 »). Laisser vide = page de garde sans logo.</div>
         <textarea id="logoB64" placeholder="iVBORw0KGgo…"></textarea>
@@ -580,6 +626,18 @@ function dl(blob,name){var u=URL.createObjectURL(blob);var a=document.createElem
     return docx.Packer.toBlob(doc).then(function(blob){dl(blob,options.fichier||"statuts_projet.docx");return blob;});}
   global.PLUME=global.PLUME||{};global.PLUME.genererDocx=genererDocx;
 })(window);
+
+/* ====================== NAVIGATION ====================== */
+function openAffaires(){
+  document.getElementById("menu").classList.add("hide");
+  document.getElementById("editor").classList.remove("hide");
+  window.scrollTo(0,0);
+}
+function backMenu(){
+  document.getElementById("editor").classList.add("hide");
+  document.getElementById("menu").classList.remove("hide");
+  window.scrollTo(0,0);
+}
 
 /* ====================== INIT ====================== */
 addAssoc({type:"pp",civ:"M.",nom:"Paul MARTEL-FICTIF",prof:"Retraité(e)",reg:"Communauté légale",apport:900,role:"us"});
