@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PLUME — Statuts de SCI · FIDAL Notaires</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2333838B'/%3E%3Ccircle cx='10' cy='22' r='3' fill='%23FFE764'/%3E%3Cpath d='M23 8C15 9 10 15 9 21 16 20 22 14 23 8Z' fill='none' stroke='%23fff' stroke-width='1.8' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/docx@8/build/index.umd.js"></script>
+<style>
+:root{
+  --navy:#0F2238; --teal:#33838B; --cyan:#6DD5DC; --orange:#FF982D;
+  --grey:#657D96; --amande:#82AA98; --ocre:#E3CC7A; --jaune:#FFE764;
+  --paper:#fff; --bg:#F4F5F7; --line:#E4E7EB; --ink:#1A1A1A;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+/* En-tête */
+header{background:var(--navy);color:#fff;padding:18px 22px;display:flex;align-items:center;gap:16px;
+  background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.03) 0 2px,transparent 2px 9px);}
+.appicon{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;position:relative;box-shadow:0 2px 6px rgba(0,0,0,.25);flex:none}
+.appicon i{font-size:26px;color:var(--teal);line-height:1}
+.appicon .dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--jaune);left:8px;bottom:8px;box-shadow:0 0 0 2px #fff}
+.lockup{font-size:12px;letter-spacing:.14em;color:#cdd5e0;line-height:1.25}
+.lockup b{color:#fff;font-weight:700}
+.lockup .sl{color:var(--ocre);font-weight:700}
+.htitle{margin-left:auto;text-align:right}
+.htitle .t{font-size:18px;font-weight:700}
+.htitle .s{font-size:12px;color:#cdd5e0}
+/* Bandeau garde-fous */
+#guards{background:#FFF7E6;border-bottom:1px solid #F0E3BD;color:#6b5a1f;font-size:13px;padding:8px 22px;display:none}
+#guards.on{display:block}
+#guards b{color:#8a6d12}
+#guards ul{margin:6px 0 0;padding-left:18px}
+/* Layout formulaire */
+.wrap{max-width:1100px;margin:0 auto;padding:22px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.card h2{font-size:14px;color:var(--teal);margin:0 0 12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+label{display:block;font-size:12.5px;color:var(--navy);font-weight:600;margin:10px 0 4px}
+input[type=text],input[type=number],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:13px;color:var(--ink);background:#fff}
+textarea{min-height:54px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:auto 1fr 1fr;gap:10px}
+.chk{display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:var(--navy);font-weight:600}
+.chk input{width:auto}
+.hint{font-size:11.5px;color:var(--grey);margin-top:4px}
+.assoc{border:1px dashed var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:#fafbfc}
+.assoc .row{display:grid;grid-template-columns:90px 70px 1fr;gap:8px}
+.btn{padding:9px 15px;border-radius:9px;border:1px solid var(--navy);background:#fff;color:var(--navy);font-family:inherit;font-weight:600;font-size:13px;cursor:pointer}
+.btn:hover{background:var(--navy);color:#fff}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn.primary:hover{filter:brightness(.95)}
+.btn.ghost{border-color:var(--line);color:var(--grey)}
+.hide{display:none!important}
+.flag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px}
+.flag.ok{background:#E6F4EA;color:#256b3a}
+.flag.ko{background:#FCE8E6;color:#a3271b}
+/* Barre d'actions */
+.actions{position:sticky;bottom:0;background:rgba(244,245,247,.95);border-top:1px solid var(--line);padding:14px 22px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;backdrop-filter:blur(4px)}
+.actions .sp{flex:1}
+/* Aperçu / document */
+#fulldoc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:34px 40px;margin-top:18px;max-width:820px;margin-left:auto;margin-right:auto}
+#fulldoc h1{font-size:15px;color:var(--navy);border-bottom:2px solid var(--cyan);padding-bottom:4px;margin:22px 0 10px}
+#fulldoc h2{font-size:13px;color:#000;margin:16px 0 6px}
+#fulldoc p{font-size:13px;text-align:justify;line-height:1.55;margin:6px 0}
+#fulldoc .note{font-size:11.5px;color:var(--grey);font-style:italic;background:#f7f9fa;border-left:3px solid var(--cyan);padding:6px 10px;margin:8px 0}
+.cover{text-align:center;padding:30px 0 26px;border-bottom:1px dashed var(--line);margin-bottom:18px}
+.cover .st{font-size:13px;color:var(--grey);font-weight:700;letter-spacing:.08em}
+.cover .dn{font-size:24px;color:var(--navy);font-weight:700;margin:6px 0}
+.cover .sub{font-size:13px;color:var(--grey)}
+.cover .exp{font-size:13px;color:var(--teal);font-weight:600;margin-top:4px}
+.cover img{max-width:180px;margin-bottom:14px}
+.gf{margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
+.gf h3{font-size:13px;color:var(--teal)}
+.gf li{font-size:11.5px;color:var(--grey);margin:3px 0}
+.foot{color:var(--grey);font-size:11px;text-align:center;padding:20px}
+@media print{header,#guards,.actions,.card,.editor-only{display:none!important}#fulldoc{border:none;margin:0;padding:0}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="appicon"><i class="ti ti-feather"></i><span class="dot"></span></div>
+  <div class="lockup"><b>FIDAL</b> <span class="sl">/</span> <b>NOTAIRES</b><br>Paris — Madeleine</div>
+  <div class="htitle"><div class="t">PLUME</div><div class="s">Rédaction de statuts · SCI</div></div>
+</header>
+
+<div id="guards"></div>
+
+<div class="wrap editor-only" id="editor">
+
+  <div class="grid">
+    <!-- Colonne 1 -->
+    <div>
+      <div class="card">
+        <h2>Forme & identité</h2>
+        <label>Dénomination sociale</label>
+        <input type="text" id="denom" placeholder="SCI DU ..." value="SCI DU VIEUX PLATANE" />
+        <label>Siège social</label>
+        <input type="text" id="siege" placeholder="adresse complète" value="12 rue des Acacias, 75016 Paris" />
+        <div class="row2">
+          <div><label>Durée</label>
+            <select id="duree"><option>99 ans</option><option>50 ans</option><option value="__autre">Autre…</option></select>
+            <input type="text" id="duree_a" class="hide" placeholder="ex. 75 ans" /></div>
+          <div><label>Transfert du siège par la gérance</label>
+            <select id="transfert"><option value="dept">Même dépt / limitrophe</option><option value="commune">Même commune</option></select></div>
+        </div>
+        <label>Objet</label>
+        <select id="objet"><option value="large">Large (France et étranger)</option><option value="restreint">Restreint (France)</option></select>
+        <div class="chk"><input type="checkbox" id="caution" checked><label for="caution" style="margin:0">Faculté de cautionnement (y c. hypothécaire)</label></div>
+        <div class="chk"><input type="checkbox" id="titres" checked><label for="titres" style="margin:0">Portefeuille de titres / placements financiers</label></div>
+        <div class="chk"><input type="checkbox" id="raison" checked><label for="raison" style="margin:0">Mentionner la raison d'être familiale</label></div>
+      </div>
+
+      <div class="card">
+        <h2>Associés <span id="assocflag"></span></h2>
+        <div id="assocs"></div>
+        <button class="btn sm" type="button" onclick="addAssoc()">+ Ajouter un associé</button>
+        <div class="hint">Pour une personne morale, choisir « PM » (représentée par son représentant légal).</div>
+      </div>
+
+      <div class="card">
+        <h2>Apports & capital <span id="capflag"></span></h2>
+        <label>Nature des apports</label>
+        <select id="apports" onchange="syncImmo()">
+          <option value="num">Numéraire</option>
+          <option value="immeuble">Immeuble (apport en nature)</option>
+          <option value="mixte">Mixte (numéraire + immeuble)</option>
+        </select>
+        <div class="hint" id="immoforce" style="display:none">⚠ Apport immobilier → trame forcée en <b>acte authentique</b>.</div>
+        <div class="row2">
+          <div><label>Capital social (€)</label><input type="number" id="capital" value="1000" oninput="updateGuards()"></div>
+          <div><label>Valeur nominale (€)</label><input type="number" id="nominale" value="10"></div>
+        </div>
+        <div class="chk"><input type="checkbox" id="variable" onchange="document.getElementById('plancherwrap').classList.toggle('hide',!this.checked);updateGuards()"><label for="variable" style="margin:0">Capital variable</label></div>
+        <div id="plancherwrap" class="hide"><label>Capital plancher (€)</label><input type="number" id="plancher" value="500"></div>
+
+        <div id="immoblock" class="hide" style="margin-top:10px;border-top:1px dashed var(--line);padding-top:10px">
+          <label>Apporteur de l'immeuble</label><input type="text" id="im_apporteur" placeholder="M./Mme …">
+          <label>Désignation</label><input type="text" id="im_desig" placeholder="maison / appartement …">
+          <label>Références cadastrales</label><input type="text" id="im_cadastre" placeholder="section / n° …">
+          <div class="row2">
+            <div><label>Valeur (€)</label><input type="number" id="im_valeur" value="0" oninput="updateGuards()"></div>
+            <div><label>Origine de propriété</label><input type="text" id="im_origine" placeholder="acquisition / succession …"></div>
+          </div>
+          <div class="chk"><input type="checkbox" id="im_diag"><label for="im_diag" style="margin:0">Diagnostics à annexer</label></div>
+          <div class="chk"><input type="checkbox" id="im_residence" onchange="updateGuards()"><label for="im_residence" style="margin:0">Constitue la résidence de la famille (art. 215)</label></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonne 2 -->
+    <div>
+      <div class="card">
+        <h2>Détention & démembrement</h2>
+        <label>Détention des parts</label>
+        <select id="detention" onchange="syncDemem();updateGuards()">
+          <option value="pp">Pleine propriété</option>
+          <option value="demem">Démembrement (usufruit / nue-propriété)</option>
+        </select>
+        <div id="demblock" class="hide">
+          <div class="chk"><input type="checkbox" id="quasi" checked><label for="quasi" style="margin:0">Quasi-usufruit (art. 621) sur réserves, dispense de caution, créance indexée ICC</label></div>
+          <div class="chk"><input type="checkbox" id="vote"><label for="vote" style="margin:0">Répartition du droit de vote (usufruitier = résultat ; nu-propriétaire = reste)</label></div>
+          <div class="hint">Renseigner le rôle (US / NP) de chaque associé dans la carte « Associés ».</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Parts, cessions, agrément</h2>
+        <label>Nantissement des parts</label>
+        <select id="nantiss"><option value="interdit">Interdit</option><option value="agrement">Soumis à agrément</option></select>
+        <div class="chk"><input type="checkbox" id="dispense" onchange="document.getElementById('benefwrap').classList.toggle('hide',!this.checked);updateGuards()"><label for="dispense" style="margin:0">Dispense d'agrément (bénéficiaires nommés)</label></div>
+        <div id="benefwrap" class="hide"><label>Bénéficiaires dispensés</label><input type="text" id="beneficiaires" placeholder="descendants en ligne directe des associés"></div>
+      </div>
+
+      <div class="card">
+        <h2>Gérance</h2>
+        <label>Gérant(s)</label><input type="text" id="gerant" value="M. Paul MARTEL-FICTIF">
+        <div class="row2">
+          <div><label>Durée des fonctions</label>
+            <select id="gduree"><option>Illimitée</option><option>3 ans</option><option>6 ans</option><option value="__autre">Autre…</option></select>
+            <input type="text" id="gduree_a" class="hide" placeholder="ex. 4 ans"></div>
+          <div><label>Rémunération</label>
+            <select id="grem"><option>Gratuit</option><option value="__autre">Montant / modalités…</option></select>
+            <input type="text" id="grem_a" class="hide" placeholder="ex. 500 € / mois"></div>
+        </div>
+        <div class="chk"><input type="checkbox" id="protege" checked onchange="updateGuards()"><label for="protege" style="margin:0">Gérant statutaire protégé (révocable à l'unanimité, vote sa révocation, cogérance survivante)</label></div>
+        <div class="chk"><input type="checkbox" id="pouvoirs" checked><label for="pouvoirs" style="margin:0">Pouvoirs encadrés (autorisation AGE : vendre, hypothéquer, emprunter, bail commercial, fonder société)</label></div>
+      </div>
+
+      <div class="card">
+        <h2>Décisions, comptes, divers</h2>
+        <div class="row2">
+          <div><label>Majorité AGO</label>
+            <select id="ago"><option>50 %</option><option>66 %</option><option>75 %</option><option value="__autre">Autre…</option></select>
+            <input type="text" id="ago_a" class="hide" placeholder="ex. 60 %"></div>
+          <div><label>Majorité AGE</label>
+            <select id="age"><option>80 %</option><option>75 %</option><option>100 %</option><option value="__autre">Autre…</option></select>
+            <input type="text" id="age_a" class="hide" placeholder="ex. 85 %"></div>
+        </div>
+        <div class="hint">À deux associés, l'unanimité prévaut : les majorités sont alors sans objet.</div>
+        <div class="row2">
+          <div><label>Début d'exercice</label><input type="text" id="exd" value="1er janvier"></div>
+          <div><label>Fin d'exercice</label><input type="text" id="exf" value="31 décembre"></div>
+        </div>
+        <label>Première clôture</label><input type="text" id="excloture" value="31 décembre 2026">
+        <div class="chk"><input type="checkbox" id="cca" checked><label for="cca" style="margin:0">CCA non remboursable si atteinte à l'intérêt social</label></div>
+        <div class="chk"><input type="checkbox" id="mediation" checked><label for="mediation" style="margin:0">Clause de médiation préalable</label></div>
+        <label>Liquidateur</label><input type="text" id="liquidateur" placeholder="le gérant en fonction">
+      </div>
+
+      <div class="card">
+        <h2>Régime & office</h2>
+        <label>Régime fiscal</label>
+        <select id="fiscal" onchange="updateGuards()"><option value="ir">IR (art. 8 CGI)</option><option value="is">IS (sur option)</option></select>
+        <label>Trame de l'acte</label>
+        <select id="trame" onchange="syncOffice()"><option value="ssp">Sous seing privé</option><option value="auth">Acte authentique</option></select>
+        <div id="officeblock" class="hide" style="border-top:1px dashed var(--line);padding-top:10px;margin-top:8px">
+          <label>Notaire</label><input type="text" id="of_notaire" value="Maître Jean-François DUMETZ">
+          <div class="row2">
+            <div><label>Ville</label><input type="text" id="of_ville" value="Paris"></div>
+            <div><label>CRPCEN</label><input type="text" id="of_crpcen" value="75007"></div>
+          </div>
+          <label>Date de l'acte</label><input type="text" id="of_date" placeholder="[DATE]">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Logo (optionnel, pour le .docx)</h2>
+        <div class="hint">Coller ici la chaîne base64 du logo FIDAL (via l'utilitaire « PLUME_logo_to_base64 »). Laisser vide = page de garde sans logo.</div>
+        <textarea id="logoB64" placeholder="iVBORw0KGgo…"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="docwrap" class="wrap"></div>
+
+<div class="actions">
+  <button class="btn" type="button" onclick="apercu()"><i class="ti ti-eye"></i> Aperçu</button>
+  <button class="btn primary" type="button" onclick="exportDocx()"><i class="ti ti-file-type-docx"></i> Word (.docx charté)</button>
+  <button class="btn" type="button" onclick="exportDoc()">Word simple (.doc)</button>
+  <button class="btn ghost" type="button" onclick="sendMail()"><i class="ti ti-mail"></i> Mail</button>
+  <span class="sp"></span>
+  <span class="hint">Tout document est un <b>projet à relire par un notaire</b>.</span>
+</div>
+
+<div class="foot">PLUME · FIDAL Notaires Paris — prototype. Données traitées localement dans le navigateur.</div>
+
+<script>
+/* ====================== MOTEUR (port de plume_engine.py) ====================== */
+function fmt_eur(n){var v=Math.round(Number(n)||0);return String(v).replace(/\B(?=(\d{3})+(?!\d))/g,"\u00a0");}
+function _num(x){if(x==null)return 0;var s=String(x).replace(/[\s\u00a0\u20ac€]/g,"").replace(",",".");var v=parseFloat(s);return isFinite(v)?Math.round(v):0;}
+
+function normalize(a){
+  a=Object.assign({},a||{});
+  var apports=a.apports||"num";
+  var immo=(apports==="immeuble"||apports==="mixte");
+  a.immo_present=immo;
+  if(immo)a.trame="auth";
+  if(a.trame==null)a.trame="ssp";
+  if(a.fiscal==null)a.fiscal="ir";
+  if(a.objet==="restreint")a.titres=false;
+  var assocs=a.assocs||[];a.assocs=assocs;a.nb=assocs.length;
+  var cap=_num(a.capital);var nom=_num(a.nominale)||1;
+  a.capital=cap;a.nominale=nom;a.nbparts=nom?Math.round(cap/nom):0;
+  var num_total=(apports==="immeuble")?0:assocs.reduce(function(s,x){return s+_num(x.apport);},0);
+  var immo_val=immo?_num((a.immo||{}).valeur):0;
+  a.num_total=num_total;a.immo_val=immo_val;a.apport_total=num_total+immo_val;
+  return a;
+}
+
+function garde_fous(a){
+  var g=[];var ap=a.apports;
+  if(a.immo_present)g.push("Apport immobilier : la trame est forcée en acte authentique.");
+  if((a.immo||{}).residence&&ap!=="num")g.push("Résidence de la famille : consentement du conjoint (art. 215) et information (art. 1832-2).");
+  if(a.apport_total&&a.apport_total!==a.capital)g.push("Total des apports ("+fmt_eur(a.apport_total)+" €) différent du capital ("+fmt_eur(a.capital)+" €) : à réconcilier.");
+  if(a.detention==="demem")g.push("Démembrement ab initio : préciser l'origine des fonds et la cohérence apports / valeur usufruit-nue-propriété.");
+  if(a.detention==="demem"&&a.fiscal==="is")g.push("Démembrement à l'IS : l'appareil patrimonial (art. 8 CGI) suppose généralement l'IR.");
+  if(a.fiscal==="is"&&ap!=="num")g.push("Apport immobilier à une société à l'IS : droits de mutation et plus-value d'apport à vérifier.");
+  if(a.variable)g.push("Capital variable : licite (art. L231-1) mais soumet aux art. L231-1 à L231-8 et impose la mention à capital variable.");
+  if(a.protege)g.push("Gérant statutaire quasi-irrévocable : peser l'effet sur la gouvernance.");
+  if(a.nb===2)g.push("Deux associés : unanimité de droit ; majorités sans objet.");
+  if(a.nb>=3)g.push("AGE à "+(a.age||"80 %")+" : minorité de blocage dès 20 % + une voix.");
+  if(a.dispense)g.push("Dispense d'agrément nominative : fige des bénéficiaires désignés.");
+  g.push("Taux et seuils fiscaux à vérifier à la date de l'acte.");
+  g.push("Document généré : PROJET à relire par un notaire.");
+  return g;
+}
+
+function _ouverture(a){
+  var demem=a.detention==="demem";var parts=[];
+  a.assocs.forEach(function(x){
+    if(x.type==="pm"){parts.push((x.nom||"[SOCIÉTÉ]")+" (personne morale), représentée par son représentant légal");}
+    else{var role="";if(demem){var r=x.role;role=" - "+(r==="us"?"usufruitier":r==="np"?"nu-propriétaire":"pleine propriété");}
+      parts.push((x.civ||"M.")+" "+(x.nom||"[NOM]")+", "+((x.prof||"").toLowerCase())+", "+((x.reg||"").toLowerCase())+role);}
+  });
+  var qui=parts.join(" ; ")+".";
+  if(a.trame==="auth"){var m=a.office||{};
+    var txt="Le "+(m.date||"[DATE]")+", à "+(m.ville||"[VILLE]")+", "+(m.notaire||"[NOTAIRE]")+", notaire associé de la SELAS FIDAL NOTAIRES (CRPCEN "+(m.crpcen||"[CRPCEN]")+"), a reçu le présent acte à la requête de : "+qui;
+    return["Ouverture - acte authentique",txt];}
+  return["Ouverture - sous seing privé","Les soussignés : "+qui+" Ont établi ainsi qu'il suit les statuts d'une société civile devant exister entre eux et tout futur associé."];
+}
+
+function build_document(a){
+  a=normalize(a);var demem=a.detention==="demem";var el=[];
+  function h1(t){el.push({t:"h1",text:t});}function h2(t){el.push({t:"h2",text:t});}
+  function p(t){el.push({t:"p",text:t});}function note(t){el.push({t:"note",text:t});}
+  var ouv=_ouverture(a);h2(ouv[0]);p(ouv[1]);
+  var communaute=a.assocs.some(function(x){return (x.reg||"").toLowerCase().indexOf("communaut")===0;});
+  if(communaute&&a.immo_present)note("Note PLUME - apport susceptible de porter sur un bien commun : information du conjoint (art. 1832-2) et, si logement de la famille, consentement (art. 215).");
+
+  h1("TITRE I - CARACTÉRISTIQUES");
+  h2("Article 1 - Forme");
+  p("La société a la forme d'une société civile, régie par les articles 1832 à 1870-1 du Code civil, par le décret n° 78-704 du 3 juillet 1978 et par les présents statuts.");
+  h2("Article 2 - Objet");
+  var obj="La société a pour objet, "+(a.objet==="restreint"?"en France":"tant en France qu'à l'étranger")+" : l'acquisition, la construction, l'administration et la location de tous biens et droits immobiliers, ainsi que leur vente à titre exceptionnel";
+  if(a.caution)obj+=" ; la faculté de consentir tous cautionnements, notamment hypothécaires";
+  if(a.titres)obj+=" ; l'acquisition, la gestion et la cession d'un portefeuille de titres et tous placements financiers";
+  obj+=" ; le tout au moyen de capitaux propres ou d'emprunt. Et généralement toutes opérations civiles se rattachant à cet objet sans en altérer le caractère civil.";
+  if(a.raison)obj+=" La raison d'être de la société est familiale : assurer la détention puis la transmission du patrimoine.";
+  p(obj);
+  h2("Article 3 - Dénomination");
+  p("La dénomination sociale est : "+(a.denom||"[DÉNOMINATION]")+". Dans tous les actes destinés aux tiers, elle est précédée ou suivie de Société Civile ou S.C., du capital"+(a.variable?" et de la mention à capital variable":"")+", du siège, du SIREN et de la mention RCS.");
+  h2("Article 4 - Siège");
+  p("Le siège social est fixé à : "+(a.siege||"[SIÈGE]")+". Il peut être transféré par décision de la gérance dans "+(a.transfert==="commune"?"la même commune":"le même département ou un département limitrophe")+", et partout ailleurs par décision extraordinaire.");
+  h2("Article 5 - Durée");
+  p("La société est constituée pour "+(a.duree||"99 ans")+" à compter de son immatriculation, sauf prorogation ou dissolution anticipée.");
+
+  h1("TITRE II - APPORTS - CAPITAL SOCIAL");
+  h2("Article 6 - Apports");
+  var seg="";
+  if(a.apports!=="immeuble"){
+    var lignes=a.assocs.filter(function(x){return _num(x.apport)>0;}).map(function(x){return (x.civ||"M.")+" "+(x.nom||"[NOM]")+" : "+fmt_eur(_num(x.apport))+" €";}).join(" ; ");
+    seg+="Apports en numéraire - "+(lignes||"à compléter")+" ; total "+fmt_eur(a.num_total)+" €. ";
+  }
+  if(a.immo_present){var im=a.immo||{};
+    seg+="Apport en nature par "+(im.apporteur||"[APPORTEUR]")+" : "+(im.desig||"[DÉSIGNATION]")+", "+(im.cadastre||"[CADASTRE]")+", évalué à "+fmt_eur(a.immo_val)+" €, origine : "+(im.origine||"[ORIGINE]")+(im.diag?", diagnostics annexés":"")+(im.residence?". Bien constituant la résidence de la famille (art. 215).":".")+" ";
+  }
+  seg+="Libération des apports en numéraire à première demande de la gérance ; apports en nature libérés intégralement.";
+  p(seg);
+  if(demem)note("Note PLUME - démembrement ab initio : préciser l'origine des fonds et, le cas échéant, la donation préalable au nu-propriétaire ; vérifier la cohérence des montants apportés avec la valeur de l'usufruit et de la nue-propriété.");
+  h2("Article 7 - Capital social");
+  var cp="Le capital social est fixé à "+fmt_eur(a.capital)+" euros, divisé en "+fmt_eur(a.nbparts)+" parts de "+fmt_eur(a.nominale)+" euro(s), réparties "+(demem?"en démembrement (usufruit / nue-propriété)":"en pleine propriété")+".";
+  if(a.variable)cp+=" Le capital est variable (art. L231-1 à L231-8 du Code de commerce) ; il ne peut être réduit en dessous de "+fmt_eur(_num(a.plancher))+" euros (capital plancher) ; la mention à capital variable figure sur tous les documents destinés aux tiers.";
+  p(cp);
+  h2("Article 8 - Augmentation du capital");
+  p("Le capital peut être augmenté par décision extraordinaire ; chaque associé dispose d'un droit préférentiel de souscription"+(demem?", réparti entre usufruitier et nu-propriétaire, avec pacte de préférence entre eux":"")+".");
+  h2("Article 9 - Réduction du capital");
+  p("Le capital peut être réduit par décision unanime"+(demem?" ; en cas de parts démembrées, application de l'article 587 du Code civil et report des droits par subrogation":"")+".");
+
+  h1("TITRE III - PARTS SOCIALES");
+  h2("Article 10 - Droits attachés aux parts");
+  var a10="Chaque part donne droit à une fraction proportionnelle de l'actif et des bénéfices ; une voix par part. Les associés répondent indéfiniment des dettes à proportion de leurs parts (art. 1857). Indivision : représentation par un mandataire unique.";
+  if(demem)a10+=" En cas de démembrement : vote à l'usufruitier (nu-propriétaire consultatif), subrogation réelle conventionnelle, résultat distribué à l'usufruitier (art. 8 CGI).";
+  if(a.vote)a10+=" Par dérogation, le droit de vote est réparti : usufruitier sur l'affectation du résultat, nu-propriétaire sur les autres décisions.";
+  if(a.quasi)a10+=" Quasi-usufruit (art. 621) sur la distribution des réserves, dispense de caution, créance de restitution indexée sur l'ICC.";
+  p(a10);
+  h2("Article 11 - Cessions et agrément");
+  var a11="Cessions constatées par écrit, opposables dans les formes de l'article 1690. Agrément gradué selon la qualité du cessionnaire : entre associés, majorité extraordinaire ; ascendant ou descendant, majorité ordinaire ; tiers, unanimité. Les voix du cédant ne sont pas comptées. Prix à dire d'expert (art. 1843-4).";
+  if(a.dispense)a11+=" Sont dispensées d'agrément les mutations au profit de "+(a.beneficiaires||"des descendants en ligne directe des associés")+".";
+  a11+=" Nantissement des parts "+(a.nantiss==="interdit"?"interdit":"soumis au consentement donné dans les conditions de l'agrément")+".";
+  p(a11);
+  h2("Article 12 - Mutations par décès");
+  p("La société n'est pas dissoute par le décès d'un associé. Les ayants droit ne deviennent associés qu'après agrément (même graduation), les voix transmises étant neutralisées pendant la procédure ; à défaut, valeur fixée selon l'article 1843-4."+(a.dispense?" Dispense au profit de "+(a.beneficiaires||"des descendants en ligne directe")+".":""));
+  h2("Article 13 - Retrait");
+  p("Tout associé peut se retirer après autorisation unanime des autres associés, ou pour justes motifs par décision de justice ; parts remboursées à leur valeur (art. 1843-4).");
+
+  h1("TITRE IV - ADMINISTRATION");
+  h2("Article 14 - Gérance");
+  var gremv=(a.grem==="Gratuit"||a.grem==="gratuit"||!a.grem)?"fonctions gratuites":a.grem;
+  var a14="La société est administrée par "+(a.gerant||"[GÉRANT]")+", "+(a.protege?"gérant statutaire":"gérant nommé par décision collective")+", pour une durée "+((a.gduree||"illimitée").toLowerCase())+". La gérance dispose des pouvoirs les plus étendus dans la limite de l'objet social. Rémunération : "+gremv+".";
+  if(a.protege)a14+=" Le gérant statutaire n'est révocable que par décision unanime, participant au vote sur sa propre révocation ; cogérance survivante.";
+  if(a.pouvoirs)a14+=" Pouvoirs encadrés : autorisation préalable de la collectivité pour vendre, hypothéquer, emprunter, consentir un bail commercial ou rural, ou participer à la constitution d'une société.";
+  p(a14);
+  if(a.protege)note("Note PLUME - gérant statutaire quasi-irrévocable : sa révocation est en pratique très difficile ; à confirmer au regard de l'intention des associés.");
+  h2("Article 15 - Décisions collectives");
+  if(a.nb===2){
+    p("Les décisions sont prises en assemblée, par consultation écrite ou acte unanime. La société ne comprenant que deux associés, toutes les décisions sont prises à l'unanimité.");
+    note("Note PLUME - à deux associés, la règle d'unanimité prévaut ; les seuils de majorité restent sans objet tant que l'effectif n'évolue pas.");
+  }else{
+    p("Les décisions sont prises en assemblée, par consultation écrite ou acte unanime. Majorités : assemblée ordinaire "+(a.ago||"50 %")+" des voix ; assemblée extraordinaire "+(a.age||"80 %")+" des voix.");
+  }
+
+  h1("TITRE V - COMPTES SOCIAUX");
+  h2("Article 16 - Exercice social");
+  p("L'exercice social commence le "+(a.exd||"1er janvier")+" et finit le "+(a.exf||"31 décembre")+" de chaque année. Par exception, le premier exercice court de l'immatriculation au "+(a.excloture||"[1re clôture]")+".");
+  h2("Article 17 - Détermination et affectation du résultat");
+  var a17="La gérance établit les comptes et rend compte au moins une fois l'an ; l'assemblée ordinaire statue sur l'affectation du résultat.";
+  if(a.titres)a17+=" Le résultat intègre les plus-values latentes sur les produits de capitalisation (SICAV, FCP, assurance-vie), évaluées à la clôture.";
+  p(a17);
+
+  h1("TITRE VI - DISPOSITIONS DIVERSES");
+  h2("Article 18 - Comptes courants d'associés");
+  p("Les associés peuvent mettre des sommes à disposition en compte courant, aux conditions fixées par décision ordinaire."+(a.cca?" Le remboursement est refusé s'il porte atteinte à l'intérêt social.":""));
+  h2("Article 19 - Dissolution - Liquidation");
+  p("La société prend fin à l'expiration de sa durée ou par décision extraordinaire unanime ; elle n'est dissoute ni par le décès d'un associé ni par la révocation d'un gérant. Liquidation confiée à "+(a.liquidateur||"le gérant en fonction")+".");
+  h2("Article 20 - Contestations");
+  p("Les contestations relèvent des tribunaux du lieu du siège social."+(a.mediation?" Toute contestation est précédée d'une tentative de médiation.":""));
+
+  if(a.trame==="auth"){
+    h1("DEUXIÈME PARTIE - DISPOSITIONS DIVERSES ET TRANSITOIRES");
+    p("Immatriculation ; désignation des premiers gérants ; reprise des actes accomplis pour le compte de la société en formation ; premier exercice ; régime "+(a.fiscal==="is"?"IS":"IR")+" ; déclaration annuelle (art. 990 D et 990 E) ; information RGPD ; certification d'identité."+(a.immo_present?" Bloc apport immobilier : publicité foncière, état hypothécaire, effet relatif, diagnostics.":""));
+  }else{
+    h1("FISCALITÉ");
+    p((a.fiscal==="is"?"Option pour l'impôt sur les sociétés.":"Société relevant de l'impôt sur le revenu (art. 8 CGI), à défaut d'option IS.")+" Apports purs et simples enregistrés gratuitement (art. 810) ; déclaration annuelle (art. 990 E). Taux et seuils à vérifier à la date de l'acte.");
+  }
+
+  var meta={denom:a.denom||"[DÉNOMINATION]",capital:fmt_eur(a.capital),variable:!!a.variable,siege:a.siege||"[SIÈGE]",trame:a.trame,expertise:"Patrimoine familial",notaire:(a.office||{}).notaire||""};
+  return {meta:meta,elements:el,garde_fous:garde_fous(a)};
+}
+
+/* ====================== COLLECTE DU FORMULAIRE ====================== */
+function val(id){var e=document.getElementById(id);return e?e.value:"";}
+function chk(id){var e=document.getElementById(id);return !!(e&&e.checked);}
+function selA(id){var v=val(id);return v==="__autre"?val(id+"_a"):v;}
+
+function collect(){
+  var a={};
+  a.denom=val("denom");a.siege=val("siege");a.duree=selA("duree");a.transfert=val("transfert");
+  a.objet=val("objet");a.caution=chk("caution");a.titres=chk("titres");a.raison=chk("raison");
+  a.apports=val("apports");a.capital=val("capital");a.nominale=val("nominale");
+  a.variable=chk("variable");a.plancher=val("plancher");
+  a.detention=val("detention");a.quasi=chk("quasi");a.vote=chk("vote");
+  a.nantiss=val("nantiss");a.dispense=chk("dispense");a.beneficiaires=val("beneficiaires");
+  a.gerant=val("gerant");a.gduree=selA("gduree");a.grem=selA("grem");a.protege=chk("protege");a.pouvoirs=chk("pouvoirs");
+  a.ago=selA("ago");a.age=selA("age");a.exd=val("exd");a.exf=val("exf");a.excloture=val("excloture");
+  a.cca=chk("cca");a.mediation=chk("mediation");a.liquidateur=val("liquidateur");
+  a.fiscal=val("fiscal");a.trame=val("trame");
+  a.office={notaire:val("of_notaire"),ville:val("of_ville"),crpcen:val("of_crpcen"),date:val("of_date")};
+  a.immo={apporteur:val("im_apporteur"),desig:val("im_desig"),cadastre:val("im_cadastre"),valeur:val("im_valeur"),origine:val("im_origine"),diag:chk("im_diag"),residence:chk("im_residence")};
+  a.assocs=[];
+  document.querySelectorAll("#assocs .assoc").forEach(function(row){
+    a.assocs.push({type:row.querySelector(".a_type").value,civ:row.querySelector(".a_civ").value,nom:row.querySelector(".a_nom").value,prof:row.querySelector(".a_prof").value,reg:row.querySelector(".a_reg").value,apport:row.querySelector(".a_apport").value,role:row.querySelector(".a_role").value});
+  });
+  return a;
+}
+
+/* ====================== ASSOCIÉS (répétables) ====================== */
+var REGIMES=["Communauté légale","Séparation de biens","Participation aux acquêts","Célibataire","Pacsé(e)","Autre"];
+var PROFS=["Retraité(e)","Cadre","Architecte","Médecin","Avocat","Commerçant","Sans profession","Autre"];
+function optList(arr,sel){return arr.map(function(o){return '<option'+(o===sel?' selected':'')+'>'+o+'</option>';}).join("");}
+function addAssoc(d){
+  d=d||{};var div=document.createElement("div");div.className="assoc";
+  div.innerHTML=
+    '<div class="row"><select class="a_type" onchange="syncAssocRow(this)"><option value="pp"'+(d.type==="pm"?"":" selected")+'>PP</option><option value="pm"'+(d.type==="pm"?" selected":"")+'>PM</option></select>'+
+    '<select class="a_civ"><option>M.</option><option>Mme</option><option>Mlle</option></select>'+
+    '<input type="text" class="a_nom" placeholder="Nom Prénom / Société" value="'+(d.nom||"")+'"></div>'+
+    '<div class="row2" style="margin-top:8px"><select class="a_prof">'+optList(PROFS,d.prof)+'</select><select class="a_reg">'+optList(REGIMES,d.reg)+'</select></div>'+
+    '<div class="row2" style="margin-top:8px"><input type="number" class="a_apport" placeholder="Apport €" value="'+(d.apport||"")+'" oninput="updateGuards()">'+
+    '<select class="a_role"><option value="pp">Pleine propriété</option><option value="us"'+(d.role==="us"?" selected":"")+'>Usufruitier</option><option value="np"'+(d.role==="np"?" selected":"")+'>Nu-propriétaire</option></select></div>'+
+    '<div style="text-align:right;margin-top:8px"><button class="btn sm ghost" type="button" onclick="this.closest(\'.assoc\').remove();updateGuards()">Retirer</button></div>';
+  document.getElementById("assocs").appendChild(div);syncAssocRow(div.querySelector(".a_type"));syncDemem();updateGuards();
+}
+function syncAssocRow(sel){var row=sel.closest(".assoc");var pm=sel.value==="pm";
+  row.querySelector(".a_civ").classList.toggle("hide",pm);row.querySelector(".a_prof").classList.toggle("hide",pm);
+  row.querySelector(".a_reg").classList.toggle("hide",pm);row.querySelector(".a_role").classList.toggle("hide",pm);}
+
+/* ====================== SYNCHRONISATIONS UI ====================== */
+function syncImmo(){var v=val("apports");var immo=(v==="immeuble"||v==="mixte");
+  document.getElementById("immoblock").classList.toggle("hide",!immo);
+  document.getElementById("immoforce").style.display=immo?"block":"none";
+  if(immo){document.getElementById("trame").value="auth";syncOffice();}updateGuards();}
+function syncDemem(){var d=val("detention")==="demem";document.getElementById("demblock").classList.toggle("hide",!d);
+  document.querySelectorAll("#assocs .a_role").forEach(function(s){s.style.opacity=d?1:.5;});}
+function syncOffice(){document.getElementById("officeblock").classList.toggle("hide",val("trame")!=="auth");}
+/* champs Autre… */
+["duree","gduree","grem","ago","age"].forEach(function(id){document.addEventListener("change",function(e){if(e.target&&e.target.id===id){document.getElementById(id+"_a").classList.toggle("hide",e.target.value!=="__autre");}});});
+
+/* ====================== GARDE-FOUS LIVE ====================== */
+function updateGuards(){
+  var a=normalize(collect());var g=garde_fous(a);
+  var box=document.getElementById("guards");
+  box.innerHTML="<b>Points de vigilance :</b><ul>"+g.map(function(x){return "<li>"+x+"</li>";}).join("")+"</ul>";
+  box.classList.add("on");
+  // drapeaux
+  var cf=document.getElementById("capflag");
+  if(a.apport_total&&a.capital){var ok=a.apport_total===a.capital;cf.className="flag "+(ok?"ok":"ko");cf.textContent=ok?"apports = capital ✓":"apports "+fmt_eur(a.apport_total)+" € ≠ capital "+fmt_eur(a.capital)+" €";}
+  else cf.textContent="";
+  var af=document.getElementById("assocflag");af.className="flag ok";af.textContent=a.nb+" associé(s)";
+}
+
+/* ====================== SORTIES ====================== */
+function coverHTML(meta){
+  var logo=val("logoB64").trim();
+  var img=logo?'<img src="data:image/png;base64,'+logo+'">':'';
+  return '<div class="cover">'+img+'<div class="st">STATUTS</div><div class="dn">'+meta.denom+'</div>'+
+    '<div class="sub">Société civile immobilière au capital de '+meta.capital+' euros'+(meta.variable?' à capital variable':'')+'</div>'+
+    '<div class="sub">Siège social : '+meta.siege+'</div><div class="exp">'+meta.expertise+'</div>'+
+    (meta.trame==="auth"&&meta.notaire?'<div class="sub">Acte authentique reçu par '+meta.notaire+', FIDAL NOTAIRES</div>':'')+'</div>';
+}
+function renderDoc(model){
+  var h=coverHTML(model.meta);
+  model.elements.forEach(function(e){
+    if(e.t==="h1")h+="<h1>"+e.text+"</h1>";
+    else if(e.t==="h2")h+="<h2>"+e.text+"</h2>";
+    else if(e.t==="note")h+='<div class="note">'+e.text+'</div>';
+    else h+="<p>"+e.text+"</p>";
+  });
+  h+='<div class="gf"><h3>Points de vigilance (hors acte)</h3><ul>'+model.garde_fous.map(function(x){return "<li>"+x+"</li>";}).join("")+'</ul></div>';
+  return h;
+}
+function apercu(){
+  var model=build_document(collect());
+  document.getElementById("docwrap").innerHTML='<div id="fulldoc">'+renderDoc(model)+'</div>';
+  document.getElementById("fulldoc").scrollIntoView({behavior:"smooth"});
+}
+function exportDoc(){
+  var model=build_document(collect());
+  var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:"Segoe UI",Arial;font-size:10pt}h1{font-size:14pt}h2{font-size:12pt}p{text-align:justify}.note{color:#657D96;font-style:italic}</style></head><body>'+renderDoc(model)+'</body></html>';
+  var blob=new Blob(["\ufeff"+html],{type:"application/msword"});
+  dl(blob,"Statuts_"+slug(model.meta.denom)+"_PROJET.doc");
+}
+function exportDocx(){
+  var model=build_document(collect());var logo=val("logoB64").trim();
+  if(typeof PLUME==="undefined"||!PLUME.genererDocx){alert("Module .docx non chargé.");return;}
+  PLUME.genererDocx(model,{logoBase64:logo||null,fichier:"Statuts_"+slug(model.meta.denom)+"_PROJET.docx"})
+    .catch(function(e){alert("Erreur .docx : "+e.message+"\nUtilisez l'export .doc en secours.");});
+}
+function sendMail(){
+  var model=build_document(collect());
+  var body="Bonjour,%0D%0A%0D%0AVeuillez trouver le projet de statuts de la "+encodeURIComponent(model.meta.denom)+" (généré via PLUME, à relire).%0D%0A%0D%0ABien à vous.";
+  window.location.href="mailto:?subject="+encodeURIComponent("Projet de statuts - "+model.meta.denom)+"&body="+body;
+}
+function slug(s){return (s||"SCI").replace(/[^A-Za-z0-9]+/g,"_").replace(/^_|_$/g,"");}
+function dl(blob,name){var u=URL.createObjectURL(blob);var a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);}
+
+/* ====================== MODULE .DOCX (inline, port de plume_docx.py) ====================== */
+(function(global){"use strict";
+  var NAVY="0F2238",TEAL="33838B",CYAN="6DD5DC",GREY="657D96",BLACK="000000",FONT="Segoe UI";
+  function pt(n){return n*2;}
+  function b64ToBytes(b64){var clean=String(b64).replace(/^data:[^,]+,/,"");var bin=atob(clean);var len=bin.length,bytes=new Uint8Array(len);for(var i=0;i<len;i++)bytes[i]=bin.charCodeAt(i);return bytes;}
+  function run(text,opts){opts=opts||{};return new docx.TextRun({text:text,font:FONT,size:opts.size||pt(10),bold:!!opts.bold,italics:!!opts.italics,color:opts.color||undefined});}
+  function centered(text,sizePt,color,bold){return new docx.Paragraph({alignment:docx.AlignmentType.CENTER,children:[run(text,{size:pt(sizePt),color:color,bold:bold})]});}
+  function pageBreak(){return new docx.Paragraph({children:[new docx.PageBreak()]});}
+  function coverChildren(meta,logoBytes){var kids=[];
+    if(logoBytes){kids.push(new docx.Paragraph({alignment:docx.AlignmentType.CENTER,children:[new docx.ImageRun({data:logoBytes,transformation:{width:211,height:112}})]}));}
+    kids.push(new docx.Paragraph({text:""}));kids.push(new docx.Paragraph({text:""}));
+    kids.push(centered("STATUTS",16,GREY,true));kids.push(centered(meta.denom||"",24,NAVY,true));
+    var sub="Société civile immobilière au capital de "+(meta.capital||"")+" euros"+(meta.variable?" à capital variable":"");
+    kids.push(centered(sub,11,GREY));
+    if(meta.siege)kids.push(centered("Siège social : "+meta.siege,11,GREY));
+    if(meta.expertise)kids.push(centered(meta.expertise,11,CYAN));
+    if(meta.trame==="auth"&&meta.notaire)kids.push(centered("Acte authentique reçu par "+meta.notaire+", FIDAL NOTAIRES",10,GREY));
+    kids.push(pageBreak());return kids;}
+  function bodyChildren(model){var kids=[];
+    kids.push(new docx.Paragraph({children:[run("PLAN DE L'ACTE",{size:pt(14),bold:true,color:NAVY})]}));
+    kids.push(new docx.TableOfContents("Plan",{hyperlink:true,headingStyleRange:"1-2"}));
+    kids.push(pageBreak());
+    (model.elements||[]).forEach(function(e){
+      if(e.t==="h1")kids.push(new docx.Paragraph({text:e.text,heading:docx.HeadingLevel.HEADING_1}));
+      else if(e.t==="h2")kids.push(new docx.Paragraph({text:e.text,heading:docx.HeadingLevel.HEADING_2}));
+      else if(e.t==="note")kids.push(new docx.Paragraph({children:[run("["+e.text+"]",{size:pt(9),italics:true,color:GREY})]}));
+      else kids.push(new docx.Paragraph({alignment:docx.AlignmentType.JUSTIFIED,children:[run(e.text,{size:pt(10)})]}));
+    });
+    kids.push(pageBreak());
+    kids.push(new docx.Paragraph({children:[run("POINTS DE VIGILANCE (hors acte)",{size:pt(12),bold:true,color:TEAL})]}));
+    (model.garde_fous||[]).forEach(function(g){kids.push(new docx.Paragraph({bullet:{level:0},children:[run(g,{size:pt(9),color:GREY})]}));});
+    return kids;}
+  function buildDoc(model,logoBytes){var meta=model.meta||{};
+    return new docx.Document({creator:"PLUME - FIDAL Notaires",title:"Statuts "+(meta.denom||""),
+      styles:{default:{document:{run:{font:FONT,size:pt(10)}}},
+        paragraphStyles:[
+          {id:"Normal",name:"Normal",quickFormat:true,run:{font:FONT,size:pt(10)},paragraph:{alignment:docx.AlignmentType.JUSTIFIED,spacing:{after:120}}},
+          {id:"Heading1",name:"Heading 1",basedOn:"Normal",next:"Normal",quickFormat:true,run:{font:FONT,size:pt(14),bold:true,color:BLACK},paragraph:{alignment:docx.AlignmentType.LEFT,spacing:{before:200,after:80}}},
+          {id:"Heading2",name:"Heading 2",basedOn:"Normal",next:"Normal",quickFormat:true,run:{font:FONT,size:pt(12),bold:true,color:BLACK},paragraph:{alignment:docx.AlignmentType.LEFT,spacing:{before:200,after:80}}}
+        ]},
+      sections:[{properties:{},
+        footers:{default:new docx.Footer({children:[new docx.Paragraph({alignment:docx.AlignmentType.CENTER,children:[run("Projet PLUME - document de travail à relire par un notaire.",{size:pt(9),color:GREY})]})]})},
+        children:coverChildren(meta,logoBytes).concat(bodyChildren(model))}]});}
+  function genererDocx(model,options){options=options||{};
+    if(typeof docx==="undefined"){alert("La librairie 'docx' n'est pas chargée (CDN).");return Promise.reject(new Error("docx CDN manquant"));}
+    var logoBytes=options.logoBase64?b64ToBytes(options.logoBase64):null;
+    var doc=buildDoc(model,logoBytes);
+    return docx.Packer.toBlob(doc).then(function(blob){dl(blob,options.fichier||"statuts_projet.docx");return blob;});}
+  global.PLUME=global.PLUME||{};global.PLUME.genererDocx=genererDocx;
+})(window);
+
+/* ====================== INIT ====================== */
+addAssoc({type:"pp",civ:"M.",nom:"Paul MARTEL-FICTIF",prof:"Retraité(e)",reg:"Communauté légale",apport:900,role:"us"});
+addAssoc({type:"pp",nom:"Léa MARTEL-FICTIF",prof:"Architecte",reg:"Célibataire",apport:100,role:"np"});
+document.getElementById("detention").value="demem";
+syncImmo();syncDemem();syncOffice();updateGuards();
+</script>
+</body>
+</html>
