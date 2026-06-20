@@ -51,6 +51,9 @@ body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(-
 #editor .crumb a:hover{color:var(--ink);text-decoration:underline}
 #editor .crumb .sep{margin:0 8px;color:#C4C2BA}
 #editor .crumb .cur{color:var(--ink);font-weight:600}
+#editor .mathead{margin:8px 0 2px}
+#editor .mathead .mh-t{font-family:Georgia,serif;font-size:20px;font-weight:700;color:var(--navy)}
+#editor .mathead .mh-r{font-size:12px;color:var(--grey);margin-top:2px}
 
 /* Bandeau garde-fous */
 #guards{background:#FFF7E6;border-bottom:1px solid #F0E3BD;color:#6b5a1f;font-size:13px;padding:8px 22px;display:none}
@@ -114,10 +117,8 @@ textarea{min-height:54px;resize:vertical}
   <div class="tb-div"></div>
   <div class="tb-title">
     <div class="wordmark">PLUME</div>
-    <div class="subtitle">Rédaction de statuts de SCI</div>
+    <div class="subtitle">Rédaction d'actes et de conventions</div>
   </div>
-  <div class="tb-spacer"></div>
-  <div class="tb-ref"><div class="r1">Société civile</div><div>art. 1832 s. C. civ.</div></div>
 </header></div>
 
 <div id="guards"></div>
@@ -139,6 +140,7 @@ textarea{min-height:54px;resize:vertical}
 
 <div class="wrap editor-only hide" id="editor">
   <div class="crumb"><a onclick="backMenu()">Accueil</a><span class="sep">&rsaquo;</span><a onclick="backMenu()">Droit notarial des affaires</a><span class="sep">&rsaquo;</span><span class="cur">Statuts de SCI</span></div>
+  <div class="mathead"><div class="mh-t">Statuts de SCI</div><div class="mh-r">Société civile &middot; art. 1832 s. C. civ.</div></div>
 
   <div class="grid">
     <!-- Colonne 1 -->
