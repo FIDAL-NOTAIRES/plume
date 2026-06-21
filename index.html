@@ -7,6 +7,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2078%2078%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27bg%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%2316314f%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%23091525%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2778%27%20height%3D%2778%27%20rx%3D%2714%27%20fill%3D%27url%28%23bg%29%27%2F%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%236DD5DC%27%20stroke-width%3D%275%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Cpath%20d%3D%27M39%2013%20L56%2049%20L46%2060%20L32%2060%20L22%2049%20Z%27%2F%3E%3Cline%20x1%3D%2739%27%20y1%3D%2713%27%20x2%3D%2739%27%20y2%3D%2740%27%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D%2739%27%20cy%3D%2743.5%27%20r%3D%274.6%27%20fill%3D%27%23E3CC7A%27%2F%3E%3C%2Fsvg%3E" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/docx@8/build/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3/lib/msal-browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/pdfmake.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/vfs_fonts.js"></script>
 <style>
 :root{
   --navy:#0F2238; --teal:#33838B; --cyan:#6DD5DC; --orange:#FF982D;
@@ -56,7 +59,7 @@ body{margin:0;font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(-
 #editor .mathead .mh-r{font-size:12px;color:var(--grey);margin-top:2px}
 
 /* Bandeau garde-fous */
-#guards{background:#FFF7E6;border-bottom:1px solid #F0E3BD;color:#6b5a1f;font-size:13px;padding:8px 22px;display:none}
+#guards{background:#FFF7E6;border:1px solid #F0E3BD;border-radius:10px;color:#6b5a1f;font-size:13px;padding:10px 14px;display:none;margin:4px 0 14px}
 #guards.on{display:block}
 #guards b{color:#8a6d12}
 #guards ul{margin:6px 0 0;padding-left:18px}
@@ -121,13 +124,7 @@ textarea{min-height:54px;resize:vertical}
   </div>
 </header></div>
 
-<div id="guards"></div>
-
 <div class="wrap" id="menu">
-  <div class="menu-head">
-    <div class="mh-title">Outils par matière</div>
-    <div class="mh-sub">Choisissez une matière pour accéder aux outils.</div>
-  </div>
   <div class="mgrid">
     <div class="mcard inert" style="--c:#5E9079"><div class="band"></div><div class="ic"><i class="ti ti-users"></i></div><div class="body"><div class="mt">Famille</div><div class="md">Donations, successions, régimes matrimoniaux et partages.</div><div class="mfoot">5 outils &middot; 2 disponibles</div></div></div>
     <div class="mcard inert" style="--c:#C99A2E"><div class="band"></div><div class="ic"><i class="ti ti-database"></i></div><div class="body"><div class="mt">Patrimoine technique</div><div class="md">Évaluation, démembrement et fiscalité patrimoniale.</div><div class="mfoot">5 outils &middot; 1 disponible</div></div></div>
@@ -141,6 +138,7 @@ textarea{min-height:54px;resize:vertical}
 <div class="wrap editor-only hide" id="editor">
   <div class="crumb"><a onclick="backMenu()">Accueil</a><span class="sep">&rsaquo;</span><a onclick="backMenu()">Droit notarial des affaires</a><span class="sep">&rsaquo;</span><span class="cur">Statuts de SCI</span></div>
   <div class="mathead"><div class="mh-t">Statuts de SCI</div><div class="mh-r">Société civile &middot; art. 1832 s. C. civ.</div></div>
+  <div id="guards"></div>
 
   <div class="grid">
     <!-- Colonne 1 -->
@@ -293,6 +291,9 @@ textarea{min-height:54px;resize:vertical}
   <button class="btn" type="button" onclick="apercu()"><i class="ti ti-eye"></i> Aperçu</button>
   <button class="btn primary" type="button" onclick="exportDocx()"><i class="ti ti-file-type-docx"></i> Word (.docx charté)</button>
   <button class="btn" type="button" onclick="exportDoc()">Word simple (.doc)</button>
+  <button class="btn" type="button" onclick="mailOutlook('client')"><i class="ti ti-mail"></i> Mail client (PDF)</button>
+  <button class="btn" type="button" onclick="mailOutlook('interne')"><i class="ti ti-mail-forward"></i> Mail interne (Word)</button>
+  <span id="mailstatus" style="display:none;font-size:12px;color:#1f5a60;align-self:center"></span>
   <button class="btn ghost" type="button" onclick="sendMail()"><i class="ti ti-mail"></i> Mail</button>
   <span class="sp"></span>
   <span class="hint">Tout document est un <b>projet à relire par un notaire</b>.</span>
@@ -578,6 +579,120 @@ function sendMail(){
 function slug(s){return (s||"SCI").replace(/[^A-Za-z0-9]+/g,"_").replace(/^_|_$/g,"");}
 function dl(blob,name){var u=URL.createObjectURL(blob);var a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);}
 
+/* ====================== ENVOI OUTLOOK (M365 / Microsoft Graph) ====================== */
+var MSAL_CLIENT_ID="97d7c437-e38c-4ba9-b10e-44f2b0263662";
+var MSAL_TENANT="c4418640-34ad-4f51-ae6a-8550db7812cb";
+var _msal=null,_msalInit=false;
+async function msalReady(){
+  if(typeof msal==="undefined")throw new Error("MSAL non charge (CDN).");
+  if(!_msal){_msal=new msal.PublicClientApplication({auth:{clientId:MSAL_CLIENT_ID,authority:"https://login.microsoftonline.com/"+MSAL_TENANT,redirectUri:window.location.origin+"/"},cache:{cacheLocation:"sessionStorage"}});}
+  if(!_msalInit){await _msal.initialize();_msalInit=true;}
+  return _msal;
+}
+async function graphToken(){
+  var app=await msalReady();
+  var scopes=["User.Read","Mail.ReadWrite","Files.ReadWrite"];
+  var acc=app.getActiveAccount()||app.getAllAccounts()[0];
+  if(acc){ try{var s=await app.acquireTokenSilent({scopes:scopes,account:acc});return s.accessToken;}catch(e){} }
+  var r=await app.loginPopup({scopes:scopes});
+  app.setActiveAccount(r.account);
+  return r.accessToken;
+}
+function setMailStatus(t){var el=document.getElementById("mailstatus");if(!el)return;el.textContent=t||"";el.style.display=t?"inline":"none";}
+function escHtml(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+async function mailOutlook(kind){
+  try{
+    var model=build_document(collect());
+    var denom=(model.meta&&model.meta.denom)||"SCI";
+    setMailStatus("Connexion a Microsoft 365...");
+    var token=await graphToken();
+    var b64,fname,ctype,subject,bodyHtml;
+    if(kind==="client"){
+      setMailStatus("Generation du document...");
+      var docb64=await PLUME.genererDocxBase64(model,{logoBase64:(val("logoB64").trim()||null)});
+      try{ setMailStatus("Conversion Word vers PDF (Microsoft)..."); b64=await wordToPdfViaGraph(token,"Statuts_"+slug(denom)+"_PROJET",docb64); }
+      catch(cv){ setMailStatus("Conversion indisponible, PDF recompose..."); b64=await genererPdfBase64(model); }
+      fname="Statuts_"+slug(denom)+"_PROJET.pdf";
+      ctype="application/pdf";
+      subject="Projet de statuts \u2013 "+denom;
+      bodyHtml="Chère Madame, Cher Monsieur,<br><br>Pour faire suite à notre dernier échange, je vous prie de trouver ci-joint le projet de statuts établi. Je me tiens à votre disposition pour échanger à son sujet.<br><br>Bien à vous,";
+    } else {
+      setMailStatus("Generation du document Word...");
+      b64=await PLUME.genererDocxBase64(model,{logoBase64:(val("logoB64").trim()||null)});
+      fname="Statuts_"+slug(denom)+"_PROJET.docx";
+      ctype="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      subject="[Interne] Statuts "+denom+" \u2013 à relire";
+      bodyHtml="Bonjour,<br><br>Ci-joint le projet de statuts de la <b>"+escHtml(denom)+"</b> au format Word, à relire / compléter.<br><br>Merci,";
+    }
+    var msg={subject:subject,body:{contentType:"HTML",content:bodyHtml},toRecipients:[],
+      attachments:[{"@odata.type":"#microsoft.graph.fileAttachment",name:fname,contentType:ctype,contentBytes:b64}]};
+    setMailStatus("Creation du brouillon Outlook...");
+    var resp=await fetch("https://graph.microsoft.com/v1.0/me/messages",{method:"POST",
+      headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json"},body:JSON.stringify(msg)});
+    if(!resp.ok){var tx=await resp.text();throw new Error("Graph "+resp.status+" "+tx);}
+    var created=await resp.json();
+    setMailStatus("Brouillon cree \u2714 ouverture...");
+    window.open(created.webLink||"https://outlook.office.com/mail/drafts","_blank");
+    setTimeout(function(){setMailStatus("");},4000);
+  }catch(e){ setMailStatus(""); alert("Envoi Outlook impossible : "+((e&&e.message)?e.message:e)); }
+}
+function wordToPdfViaGraph(token,baseName,docb64){
+  return (async function(){
+    var bin=atob(docb64),n=bin.length,bytes=new Uint8Array(n);for(var i=0;i<n;i++)bytes[i]=bin.charCodeAt(i);
+    var name=baseName+"_"+Date.now()+".docx";
+    var up=await fetch("https://graph.microsoft.com/v1.0/me/drive/root:/"+encodeURIComponent(name)+":/content",{method:"PUT",headers:{"Authorization":"Bearer "+token,"Content-Type":"application/vnd.openxmlformats-officedocument.wordprocessingml.document"},body:bytes});
+    if(!up.ok)throw new Error("Upload OneDrive "+up.status);
+    var item=await up.json();var id=item.id;
+    try{
+      var pdf=await fetch("https://graph.microsoft.com/v1.0/me/drive/items/"+id+"/content?format=pdf",{headers:{"Authorization":"Bearer "+token}});
+      if(!pdf.ok)throw new Error("Conversion "+pdf.status);
+      var buf=await pdf.arrayBuffer();var u=new Uint8Array(buf),str="",CH=0x8000;
+      for(var j=0;j<u.length;j+=CH){str+=String.fromCharCode.apply(null,u.subarray(j,j+CH));}
+      return btoa(str);
+    } finally {
+      try{ await fetch("https://graph.microsoft.com/v1.0/me/drive/items/"+id,{method:"DELETE",headers:{"Authorization":"Bearer "+token}}); }catch(e){}
+    }
+  })();
+}
+function genererPdfBase64(model){
+  return new Promise(function(resolve,reject){
+    try{
+      if(typeof pdfMake==="undefined"){reject(new Error("pdfMake non charge (CDN)"));return;}
+      var meta=model.meta||{};var content=[];var logo=val("logoB64").trim();
+      if(logo&&logo.indexOf("data:")===0){content.push({image:logo,width:170,alignment:"center",margin:[0,0,0,16]});}
+      content.push({text:"\n"});
+      content.push({text:"STATUTS",style:"cover_t"});
+      content.push({text:meta.denom||"",style:"cover_d"});
+      content.push({text:"Societe civile immobiliere au capital de "+(meta.capital||"")+" euros"+(meta.variable?" a capital variable":""),style:"cover_s"});
+      if(meta.siege)content.push({text:"Siege social : "+meta.siege,style:"cover_s"});
+      if(meta.expertise)content.push({text:meta.expertise,style:"cover_s",color:"#1f7a86"});
+      if(meta.trame==="auth"&&meta.notaire)content.push({text:"Acte authentique recu par "+meta.notaire+", FIDAL NOTAIRES",style:"cover_s",margin:[0,6,0,0]});
+      content.push({text:"",pageBreak:"after"});
+      (model.elements||[]).forEach(function(e){
+        if(e.t==="h1")content.push({text:e.text,style:"h1"});
+        else if(e.t==="h2")content.push({text:e.text,style:"h2"});
+        else if(e.t==="note")content.push({text:"["+e.text+"]",style:"note"});
+        else content.push({text:e.text,margin:[0,0,0,6]});
+      });
+      if((model.garde_fous||[]).length){
+        content.push({text:"POINTS DE VIGILANCE (hors acte)",style:"vig",pageBreak:"before"});
+        content.push({ul:(model.garde_fous||[]).map(function(g){return {text:g,fontSize:9,color:"#657D96"};})});
+      }
+      var dd={info:{title:"Statuts "+(meta.denom||"")},pageMargins:[56,60,56,64],
+        defaultStyle:{fontSize:10,alignment:"justify"},
+        styles:{cover_t:{fontSize:16,bold:true,color:"#657D96",alignment:"center"},
+          cover_d:{fontSize:22,bold:true,color:"#0F2238",alignment:"center",margin:[0,6,0,6]},
+          cover_s:{fontSize:11,color:"#657D96",alignment:"center"},
+          h1:{fontSize:14,bold:true,margin:[0,12,0,4]},h2:{fontSize:12,bold:true,margin:[0,8,0,3]},
+          note:{fontSize:9,italics:true,color:"#657D96",margin:[0,2,0,4]},
+          vig:{fontSize:12,bold:true,color:"#33838B",margin:[0,12,0,4]}},
+        footer:function(){return {text:"Projet PLUME - document de travail a relire par un notaire.",alignment:"center",fontSize:8,color:"#657D96",margin:[0,8,0,0]};},
+        content:content};
+      pdfMake.createPdf(dd).getBase64(function(b64){resolve(b64);});
+    }catch(err){reject(err);}
+  });
+}
+
 /* ====================== MODULE .DOCX (inline, port de plume_docx.py) ====================== */
 (function(global){"use strict";
   var NAVY="0F2238",TEAL="33838B",CYAN="6DD5DC",GREY="657D96",BLACK="000000",FONT="Segoe UI";
@@ -626,7 +741,12 @@ function dl(blob,name){var u=URL.createObjectURL(blob);var a=document.createElem
     var logoBytes=options.logoBase64?b64ToBytes(options.logoBase64):null;
     var doc=buildDoc(model,logoBytes);
     return docx.Packer.toBlob(doc).then(function(blob){dl(blob,options.fichier||"statuts_projet.docx");return blob;});}
-  global.PLUME=global.PLUME||{};global.PLUME.genererDocx=genererDocx;
+  function genererDocxBase64(model,options){options=options||{};
+    if(typeof docx==="undefined")return Promise.reject(new Error("docx CDN manquant"));
+    var logoBytes=options.logoBase64?b64ToBytes(options.logoBase64):null;
+    var doc=buildDoc(model,logoBytes);
+    return docx.Packer.toBase64String(doc);}
+  global.PLUME=global.PLUME||{};global.PLUME.genererDocx=genererDocx;global.PLUME.genererDocxBase64=genererDocxBase64;
 })(window);
 
 /* ====================== NAVIGATION ====================== */
